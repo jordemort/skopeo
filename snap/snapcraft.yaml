@@ -1,0 +1,20 @@
+name: skopeo
+version: git
+summary: Inspect container images and repositories on registries.
+description: |
+  Inspect container images and repositories on registries.
+
+grade: devel
+confinement: devmode
+
+parts:
+  skopeo:
+    source: .
+    plugin: go
+    go-importpath: github.com/containers/skopeo
+    override-build: bash ./snap-build.sh
+
+apps:
+  skopeo:
+    command: skopeo
+
