@@ -26,6 +26,10 @@ GO ?= go
 CONTAINER_RUNTIME := $(shell command -v podman 2> /dev/null || echo docker)
 GOMD2MAN ?= $(shell command -v go-md2man || echo '$(GOBIN)/go-md2man')
 
+# For ubuntu packaging
+CURRENT_VERSION = $(shell dpkg-parsechangelog --show-field Version | sed -e 's/-.*//')
+VERSION = $(shell grep 'const Version' version/version.go | sed -e 's/const Version = //' -e 's/"//g' -e 's/-dev//g' )
+
 ifeq ($(DEBUG), 1)
   override GOGCFLAGS += -N -l
 endif

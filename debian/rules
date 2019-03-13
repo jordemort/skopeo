@@ -1,0 +1,67 @@
+#!/usr/bin/make -f
+# See debhelper(7) (uncomment to enable)
+# output every command that modifies files on the build system.
+#export DH_VERBOSE = 1
+
+
+# see FEATURE AREAS in dpkg-buildflags(1)
+#export DEB_BUILD_MAINT_OPTIONS = hardening=+all
+
+# see ENVIRONMENT in dpkg-buildflags(1)
+# package maintainers to append CFLAGS
+#export DEB_CFLAGS_MAINT_APPEND  = -Wall -pedantic
+# package maintainers to append LDFLAGS
+#export DEB_LDFLAGS_MAINT_APPEND = -Wl,--as-needed
+
+export DH_VERBOSE=1
+export DH_GOPKG := github.com/containers/skopeo
+# Include test fixtures.
+#export DH_GOLANG_INSTALL_EXTRA := discovery/file/fixtures \
+    storage/local/fixtures config/testdata promql/testdata retrieval/testdata \
+    promql/fuzz-data
+# Do not build examples.
+#export DH_GOLANG_EXCLUDES := documentation vendor
+
+# Lots of shameless copy-paste from the debian package for prometheus
+
+BUILDDIR := $(shell pwd)
+DESTDIR := $(BUILDDIR)/debian/tmp
+
+CURRENT_VERSION = $(shell dpkg-parsechangelog --show-field Version | sed -e 's/-.*//')
+VERSION = $(shell grep 'const Version' version/version.go | sed -e 's/const Version = //' -e 's/"//g' -e 's/-dev//g' )
+
+GIT_COMMIT := $(shell git rev-parse v$(VERSION) 2> /dev/null || true)
+BTRFS_BUILD_TAG = $(shell hack/btrfs_tag.sh)
+LIBDM_BUILD_TAG = $(shell hack/libdm_tag.sh)
+LOCAL_BUILD_TAGS = $(BTRFS_BUILD_TAG) $(LIBDM_BUILD_TAG) $(DARWIN_BUILD_TAG)
+BUILDTAGS += "$(LOCAL_BUILD_TAGS) containers_image_ostree_stub"
+GO := /usr/lib/go-1.10/bin/go
+
+%:
+	dh_clean
+	make clean
+	rm -rf $(BUILDDIR)/src $(BUILDDIR)/storage.conf.5
+	GOPATH=$(BUILDDIR) dh $@ --buildsystem=golang --builddirectory=$(BUILDDIR)
+
+override_dh_auto_configure:
+	dh_auto_configure -O--buildsystem=golang
+	# Include vendored dependencies.
+	cp -rp $(BUILDDIR)/vendor $(BUILDDIR)/src
+	mkdir -p $(BUILDDIR)/src/$(DH_GOPKG)
+	rsync -a $(BUILDDIR)/* $(BUILDDIR)/src/$(DH_GOPKG) --exclude src
+
+override_dh_auto_build:
+	#GOPATH=$(BUILDDIR) /usr/lib/go-1.10/bin/go build -ldflags "-X main.gitCommit=${GIT_COMMIT}" -gcflags "$(GOGCFLAGS)" -tags "$(BUILDTAGS)" -o skopeo ./cmd/skopeo
+	GOPATH=$(BUILDDIR) GO=$(GO) BUILDTAGS=$(BUILDTAGS) GIT_COMMIT=$(GIT_COMMIT) make binary-local 
+	go-md2man -in $(BUILDDIR)/contrib/containers-storage.conf.5.md -out $(BUILDDIR)/containers-storage.conf.5
+
+override_dh_auto_test:
+
+override_dh_auto_install:
+	make PREFIX=$(DESTDIR)/usr SIGSTOREDIR=$(DESTDIR)/var/lib/atomic/sigstore \
+		CONTAINERSSYSCONFIGDIR=$(DESTDIR)/etc/containers \
+		REGISTRIESDDIR=$(DESTDIR)/etc/containers/registries.d install
+	install -m0644 contrib/storage.conf $(DESTDIR)/etc/containers
+	install -m0644 vendor/github.com/containers/image/registries.conf $(DESTDIR)/etc/containers
+	install -dp $(DESTDIR)/usr/share/man/man5
+	install -m0644 containers-storage.conf.5 $(DESTDIR)/usr/share/man/man5

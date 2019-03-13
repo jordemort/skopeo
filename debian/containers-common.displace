@@ -1,0 +1,4 @@
+/etc/containers/registries.conf.orig
+/etc/containers/storage.conf.orig
+/etc/containers/policy.json.orig
+/etc/containers/registries.d/default.yaml.orig

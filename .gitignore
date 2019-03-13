@@ -1,3 +1,4 @@
 *.1
 /layers-*
 /skopeo
+/containers-storage.conf.5

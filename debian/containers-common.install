@@ -1,0 +1,7 @@
+etc/containers/policy.json
+etc/containers/registries.conf
+etc/containers/storage.conf
+etc/containers/registries.d
+etc/containers/registries.d/default.yaml
+var/lib/atomic/sigstore
+usr/share/man/man5/containers-storage.conf.5

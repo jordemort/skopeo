@@ -1,0 +1,33 @@
+Source: skopeo
+Section: devel
+Priority: optional
+Maintainer: Lokesh Mandvekar <lsm5@fedoraproject.org>
+Build-Depends: debhelper (>=9),
+    rsync,
+    libdevmapper-dev,
+    libgpgme11-dev,
+    libassuan-dev,
+    dh-golang,
+    golang-1.10,
+    btrfs-tools,
+    libglib2.0-dev,
+    go-md2man
+Standards-Version: 3.9.6
+Homepage: https://github.com/containers/skopeo
+
+Package: skopeo
+Architecture: any
+Depends: ${misc:Depends},
+    ${shlibs:Depends},
+    libgpgme11,
+    containers-common
+Description: Inspect container images and repositories on registries.
+
+Package: containers-common
+Architecture: all
+Depends: ${misc:Depends}, ${shlibs:Depends},
+   containers-golang
+Provides: skopeo-containers
+Conflicts: skopeo-containers
+Replaces: skopeo-containers
+Description: Configuration files for working with image signatures.
