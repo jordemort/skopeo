@@ -1,25 +1,40 @@
+---
+sudo: required
+
 language: go
 
-matrix:
-  include:
-  -  os: linux
-     sudo: required
-     services:
-       - docker
-  -  os: osx
+go:
+    - master
 
-notifications:
-  email: false
+services:
+    - docker
 
-install:
-  # NOTE: The (brew update) should not be necessary, and slows things down;
-  # we include it as a workaround for https://github.com/Homebrew/brew/issues/3299
-  # ideally Travis should bake the (brew update) into its images
-  # (https://github.com/travis-ci/travis-ci/issues/8552 ), but that’s only going
-  # to happen around November 2017 per https://blog.travis-ci.com/2017-10-16-a-new-default-os-x-image-is-coming .
-  # Remove the (brew update) at that time.
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update && brew install gpgme ; fi
+branches:
+    only:
+        - bionic
+
+env:
+    global:
+        - TRAVIS_ENV="-e TRAVIS=$TRAVIS
+          -e CI=$CI
+          -e TRAVIS_COMMIT=$TRAVIS_COMMIT
+          -e TRAVIS_COMMIT_RANGE=$TRAVIS_COMMIT_RANGE
+          -e TRAVIS_REPO_SLUG=$TRAVIS_REPO_SLUG
+          -e TRAVIS_PULL_REQUEST=$TRAVIS_PULL_REQUEST
+          -e TRAVIS_PULL_REQUEST_SHA=$TRAVIS_PULL_REQUEST_SHA
+          -e TRAVIS_PULL_REQUEST_SLUG=$TRAVIS_PULL_REQUEST_SLUG
+          -e TRAVIS_BRANCH=$TRAVIS_BRANCH
+          -e TRAVIS_JOB_ID=$TRAVIS_JOB_ID
+          -e TRAVIS_BUILD_DIR=$TRAVIS_BUILD_DIR"
+        - DISTRO="ubuntu"
+
+before_install:
+    - sudo apt-get -qq update
+    - sudo apt-get -qqy install realpath
 
 script:
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]];   then hack/travis_osx.sh ; fi
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then make vendor && ./hack/tree_status.sh && make check ; fi
+    - echo "Travis/host environment:"
+    - env
+    - echo
+    - echo "Running tests in SPC using ./hack/run_build.sh"
+    - "./hack/run_build.sh"
