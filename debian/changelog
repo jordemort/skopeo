@@ -1,3 +1,9 @@
+skopeo (0.1.36-1~dev~ubuntu16.04.2~ppa8) xenial; urgency=medium
+
+  * autobuilt 0975497
+
+ -- Lokesh Mandvekar (Bot) <lsm5+bot@fedoraproject.org>  Tue, 26 Mar 2019 03:14:09 +0000
+
 skopeo (0.1.36-1~dev~ubuntu16.04.2~ppa7) xenial; urgency=medium
 
   * provides and replaces skopeo-containers 
