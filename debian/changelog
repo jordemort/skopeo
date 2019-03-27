@@ -1,3 +1,9 @@
+skopeo (0.1.36-1~dev~ubuntu18.04~ppa11) bionic; urgency=medium
+
+  * autobuilt 854f766
+
+ -- Lokesh Mandvekar (Bot) <lsm5+bot@fedoraproject.org>  Wed, 27 Mar 2019 21:42:18 +0000
+
 skopeo (0.1.36-1~dev~ubuntu18.04~ppa10) bionic; urgency=medium
 
   * autobuilt 0975497
