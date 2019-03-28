@@ -1,3 +1,9 @@
+skopeo (0.1.36-1~dev~ubuntu16.04.2~ppa9) xenial; urgency=medium
+
+  * autobuilt 854f766
+
+ -- Lokesh Mandvekar (Bot) <lsm5+bot@fedoraproject.org>  Thu, 28 Mar 2019 04:19:14 +0000
+
 skopeo (0.1.36-1~dev~ubuntu16.04.2~ppa8) xenial; urgency=medium
 
   * autobuilt 0975497
