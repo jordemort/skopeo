@@ -8,7 +8,7 @@ Build-Depends: debhelper (>=9),
     libgpgme11-dev,
     libassuan-dev,
     dh-golang,
-    golang,
+    golang-1.12,
     btrfs-tools,
     libglib2.0-dev,
     go-md2man
