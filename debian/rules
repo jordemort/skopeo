@@ -21,8 +21,7 @@ export DH_GOPKG := github.com/containers/skopeo
     promql/fuzz-data
 # Do not build examples.
 #export DH_GOLANG_EXCLUDES := documentation vendor
-export GO := /usr/lib/go-1.12/bin/go
-PATH := /usr/lib/go-1.12/bin:$(PATH)
+export GO := /usr/bin/go
 
 # Lots of shameless copy-paste from the debian package for prometheus
 
