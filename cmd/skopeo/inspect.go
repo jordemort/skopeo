@@ -34,6 +34,7 @@ type inspectOptions struct {
 	global *globalOptions
 	image  *imageOptions
 	raw    bool // Output the raw manifest instead of parsing information about the image
+	config bool // Output the raw config blob instead of parsing information about the image
 }
 
 func inspectCmd(global *globalOptions) cli.Command {
@@ -58,8 +59,13 @@ func inspectCmd(global *globalOptions) cli.Command {
 		Flags: append(append([]cli.Flag{
 			cli.BoolFlag{
 				Name:        "raw",
-				Usage:       "output raw manifest",
+				Usage:       "output raw manifest or configuration",
 				Destination: &opts.raw,
+			},
+			cli.BoolFlag{
+				Name:        "config",
+				Usage:       "output configuration",
+				Destination: &opts.config,
 			},
 		}, sharedFlags...), imageFlags...),
 		Action: commandAction(opts.run),
@@ -73,7 +79,13 @@ func (opts *inspectOptions) run(args []string, stdout io.Writer) (retErr error) 
 	if len(args) != 1 {
 		return errors.New("Exactly one argument expected")
 	}
-	img, err := parseImage(ctx, opts.image, args[0])
+	imageName := args[0]
+
+	if err := reexecIfNecessaryForImages(imageName); err != nil {
+		return err
+	}
+
+	img, err := parseImage(ctx, opts.image, imageName)
 	if err != nil {
 		return err
 	}
@@ -88,10 +100,30 @@ func (opts *inspectOptions) run(args []string, stdout io.Writer) (retErr error) 
 	if err != nil {
 		return err
 	}
-	if opts.raw {
+	if opts.config && opts.raw {
+		configBlob, err := img.ConfigBlob(ctx)
+		if err != nil {
+			return fmt.Errorf("Error reading configuration blob: %v", err)
+		}
+		_, err = stdout.Write(configBlob)
+		if err != nil {
+			return fmt.Errorf("Error writing configuration blob to standard output: %v", err)
+		}
+		return nil
+	} else if opts.raw {
 		_, err := stdout.Write(rawManifest)
 		if err != nil {
 			return fmt.Errorf("Error writing manifest to standard output: %v", err)
+		}
+		return nil
+	} else if opts.config {
+		config, err := img.OCIConfig(ctx)
+		if err != nil {
+			return fmt.Errorf("Error reading OCI-formatted configuration data: %v", err)
+		}
+		err = json.NewEncoder(stdout).Encode(config)
+		if err != nil {
+			return fmt.Errorf("Error writing OCI-formatted configuration data to standard output: %v", err)
 		}
 		return nil
 	}

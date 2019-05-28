@@ -4,7 +4,7 @@
 skopeo\-inspect - Return low-level information about _image-name_ in a registry
 
 ## SYNOPSIS
-**skopeo inspect** [**--raw**] _image-name_
+**skopeo inspect** [**--raw**] [**--config**] _image-name_
 
 Return low-level information about _image-name_ in a registry
 
@@ -12,16 +12,26 @@ Return low-level information about _image-name_ in a registry
 
   _image-name_ name of image to retrieve information about
 
+  **--config** output configuration in OCI format, default is to format in JSON
+
+  _image-name_ name of image to retrieve configuration for
+
+  **--config** **--raw** output configuration in raw format
+
+  _image-name_ name of image to retrieve configuration for
+
   **--authfile** _path_
 
-  Path of the authentication file. Default is ${XDG_RUNTIME\_DIR}/containers/auth.json, which is set using `podman login`.
+  Path of the authentication file. Default is ${XDG\_RUNTIME\_DIR}/containers/auth.json, which is set using `podman login`.
   If the authorization state is not found there, $HOME/.docker/config.json is checked, which is set using `docker login`.
 
   **--creds** _username[:password]_ for accessing the registry
 
-  **--cert-dir** _path_ Use certificates at _path_ (*.crt, *.cert, *.key) to connect to the registry
+  **--cert-dir** _path_ Use certificates at _path_ (\*.crt, \*.cert, \*.key) to connect to the registry
 
   **--tls-verify** _bool-value_ Require HTTPS and verify certificates when talking to container registries (defaults to true)
+
+  **--no-creds** _bool-value_ Access the registry anonymously.
 
 ## EXAMPLES
 

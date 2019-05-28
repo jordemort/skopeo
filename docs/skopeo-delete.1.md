@@ -1,7 +1,7 @@
 % skopeo-delete(1)
 
 ## NAME
-skopeo\-delete - Mark _image-name_ for deletion.  
+skopeo\-delete - Mark _image-name_ for deletion.
 
 ## SYNOPSIS
 **skopeo delete** _image-name_
@@ -29,6 +29,8 @@ $ docker exec -it registry /usr/bin/registry garbage-collect /etc/docker-distrib
 **--cert-dir** _path_ Use certificates at _path_ (*.crt, *.cert, *.key) to connect to the registry
 
 **--tls-verify** _bool-value_ Require HTTPS and verify certificates when talking to container registries (defaults to true)
+
+**--no-creds** _bool-value_ Access the registry anonymously.
 
 Additionally, the registry must allow deletions by setting `REGISTRY_STORAGE_DELETE_ENABLED=true` for the registry daemon.
 

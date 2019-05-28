@@ -43,6 +43,11 @@ func (opts *layersOptions) run(args []string, stdout io.Writer) (retErr error) {
 	if len(args) == 0 {
 		return errors.New("Usage: layers imageReference [layer...]")
 	}
+	imageName := args[0]
+
+	if err := reexecIfNecessaryForImages(imageName); err != nil {
+		return err
+	}
 
 	ctx, cancel := opts.global.commandTimeoutContext()
 	defer cancel()
@@ -52,7 +57,7 @@ func (opts *layersOptions) run(args []string, stdout io.Writer) (retErr error) {
 		return err
 	}
 	cache := blobinfocache.DefaultCache(sys)
-	rawSource, err := parseImageSource(ctx, opts.image, args[0])
+	rawSource, err := parseImageSource(ctx, opts.image, imageName)
 	if err != nil {
 		return err
 	}

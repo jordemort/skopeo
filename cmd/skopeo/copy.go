@@ -85,6 +85,11 @@ func (opts *copyOptions) run(args []string, stdout io.Writer) error {
 	if len(args) != 2 {
 		return errorShouldDisplayUsage{errors.New("Exactly two arguments expected")}
 	}
+	imageNames := args
+
+	if err := reexecIfNecessaryForImages(imageNames...); err != nil {
+		return err
+	}
 
 	policyContext, err := opts.global.getPolicyContext()
 	if err != nil {
@@ -92,13 +97,13 @@ func (opts *copyOptions) run(args []string, stdout io.Writer) error {
 	}
 	defer policyContext.Destroy()
 
-	srcRef, err := alltransports.ParseImageName(args[0])
+	srcRef, err := alltransports.ParseImageName(imageNames[0])
 	if err != nil {
-		return fmt.Errorf("Invalid source name %s: %v", args[0], err)
+		return fmt.Errorf("Invalid source name %s: %v", imageNames[0], err)
 	}
-	destRef, err := alltransports.ParseImageName(args[1])
+	destRef, err := alltransports.ParseImageName(imageNames[1])
 	if err != nil {
-		return fmt.Errorf("Invalid destination name %s: %v", args[1], err)
+		return fmt.Errorf("Invalid destination name %s: %v", imageNames[1], err)
 	}
 
 	sourceCtx, err := opts.srcImage.newSystemContext()

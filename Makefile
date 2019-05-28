@@ -34,7 +34,7 @@ ifeq ($(DEBUG), 1)
   override GOGCFLAGS += -N -l
 endif
 
-ifeq ($(shell go env GOOS), linux)
+ifeq ($(shell $(GO) env GOOS), linux)
   GO_DYN_FLAGS="-buildmode=pie"
 endif
 
@@ -71,6 +71,19 @@ endif
 #           and inlining. Using these build options allows you to subsequently
 #           use source debugging tools like delve.
 all: binary docs-in-container
+
+help:
+	@echo "Usage: make <target>"
+	@echo
+	@echo " * 'install' - Install binaries and documents to system locations"
+	@echo " * 'binary' - Build skopeo with a container"
+	@echo " * 'binary-local' - Build skopeo locally"
+	@echo " * 'test-unit' - Execute unit tests"
+	@echo " * 'test-integration' - Execute integration tests"
+	@echo " * 'validate' - Verify whether there is no conflict and all Go source files have been formatted, linted and vetted"
+	@echo " * 'check' - Including above validate, test-integration and test-unit"
+	@echo " * 'shell' - Run the built image and attach to a shell"
+	@echo " * 'clean' - Clean artifacts"
 
 # Build a container image (skopeobuild) that has everything we need to build.
 # Then do the build and the output (skopeo) should appear in current dir

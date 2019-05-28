@@ -38,9 +38,13 @@ If the authorization state is not found there, $HOME/.docker/config.json is chec
 
 **--src-cert-dir** _path_ Use certificates at _path_ (*.crt, *.cert, *.key) to connect to the source registry or daemon
 
+**--src-no-creds** _bool-value_ Access the registry anonymously.
+
 **--src-tls-verify** _bool-value_ Require HTTPS and verify certificates when talking to container source registry or daemon (defaults to true)
 
 **--dest-cert-dir** _path_ Use certificates at _path_ (*.crt, *.cert, *.key) to connect to the destination registry or daemon
+
+**--dest-no-creds** _bool-value_  Access the registry anonymously.
 
 **--dest-ostree-tmp-dir** _path_ Directory to use for OSTree temporary files.
 

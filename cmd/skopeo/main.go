@@ -18,14 +18,15 @@ import (
 var gitCommit = ""
 
 type globalOptions struct {
-	debug             bool          // Enable debug output
-	tlsVerify         optionalBool  // Require HTTPS and verify certificates (for docker: and docker-daemon:)
-	policyPath        string        // Path to a signature verification policy file
-	insecurePolicy    bool          // Use an "allow everything" signature verification policy
-	registriesDirPath string        // Path to a "registries.d" registry configuratio directory
-	overrideArch      string        // Architecture to use for choosing images, instead of the runtime one
-	overrideOS        string        // OS to use for choosing images, instead of the runtime one
-	commandTimeout    time.Duration // Timeout for the command execution
+	debug              bool          // Enable debug output
+	tlsVerify          optionalBool  // Require HTTPS and verify certificates (for docker: and docker-daemon:)
+	policyPath         string        // Path to a signature verification policy file
+	insecurePolicy     bool          // Use an "allow everything" signature verification policy
+	registriesDirPath  string        // Path to a "registries.d" registry configuratio directory
+	overrideArch       string        // Architecture to use for choosing images, instead of the runtime one
+	overrideOS         string        // OS to use for choosing images, instead of the runtime one
+	commandTimeout     time.Duration // Timeout for the command execution
+	registriesConfPath string        // Path to the "registries.conf" file
 }
 
 // createApp returns a cli.App, and the underlying globalOptions object, to be run or tested.
@@ -83,6 +84,12 @@ func createApp() (*cli.App, *globalOptions) {
 			Usage:       "timeout for the command execution",
 			Destination: &opts.commandTimeout,
 		},
+		cli.StringFlag{
+			Name:        "registries-conf",
+			Usage:       "path to the registries.conf file",
+			Destination: &opts.registriesConfPath,
+			Hidden:      true,
+		},
 	}
 	app.Before = opts.before
 	app.Commands = []cli.Command{
@@ -99,7 +106,7 @@ func createApp() (*cli.App, *globalOptions) {
 }
 
 // before is run by the cli package for any command, before running the command-specific handler.
-func (opts *globalOptions) before(_ *cli.Context) error {
+func (opts *globalOptions) before(ctx *cli.Context) error {
 	if opts.debug {
 		logrus.SetLevel(logrus.DebugLevel)
 	}

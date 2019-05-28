@@ -662,3 +662,37 @@ func verifyManifestMIMEType(c *check.C, dir string, expectedMIMEType string) {
 	mimeType := manifest.GuessMIMEType(manifestBlob)
 	c.Assert(mimeType, check.Equals, expectedMIMEType)
 }
+
+const regConfFixture = "./fixtures/registries.conf"
+
+func (s *SkopeoSuite) TestSuccessCopySrcWithMirror(c *check.C) {
+	dir, err := ioutil.TempDir("", "copy-mirror")
+	c.Assert(err, check.IsNil)
+
+	assertSkopeoSucceeds(c, "", "--registries-conf="+regConfFixture, "copy",
+		"docker://mirror.invalid/busybox", "dir:"+dir)
+}
+
+func (s *SkopeoSuite) TestFailureCopySrcWithMirrorsUnavailable(c *check.C) {
+	dir, err := ioutil.TempDir("", "copy-mirror")
+	c.Assert(err, check.IsNil)
+
+	assertSkopeoFails(c, ".*no such host.*", "--registries-conf="+regConfFixture, "copy",
+		"docker://invalid.invalid/busybox", "dir:"+dir)
+}
+
+func (s *SkopeoSuite) TestSuccessCopySrcWithMirrorAndPrefix(c *check.C) {
+	dir, err := ioutil.TempDir("", "copy-mirror")
+	c.Assert(err, check.IsNil)
+
+	assertSkopeoSucceeds(c, "", "--registries-conf="+regConfFixture, "copy",
+		"docker://gcr.invalid/foo/bar/busybox", "dir:"+dir)
+}
+
+func (s *SkopeoSuite) TestFailureCopySrcWithMirrorAndPrefixUnavailable(c *check.C) {
+	dir, err := ioutil.TempDir("", "copy-mirror")
+	c.Assert(err, check.IsNil)
+
+	assertSkopeoFails(c, ".*no such host.*", "--registries-conf="+regConfFixture, "copy",
+		"docker://gcr.invalid/wrong/prefix/busybox", "dir:"+dir)
+}
