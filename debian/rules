@@ -42,7 +42,8 @@ BUILDTAGS += "$(LOCAL_BUILD_TAGS) containers_image_ostree_stub"
 	dh_clean
 	make clean
 	rm -rf $(BUILDDIR)/src $(BUILDDIR)/storage.conf.5
-	GOPATH=$(BUILDDIR) dh $@ --buildsystem=golang --builddirectory=$(BUILDDIR)
+	#GOPATH=$(BUILDDIR)
+	dh $@ --buildsystem=golang --builddirectory=$(BUILDDIR)
 
 override_dh_auto_configure:
 	dh_auto_configure -O--buildsystem=golang
@@ -52,7 +53,8 @@ override_dh_auto_configure:
 	rsync -a $(BUILDDIR)/* $(BUILDDIR)/src/$(DH_GOPKG) --exclude src
 
 override_dh_auto_build:
-	GOPATH=$(BUILDDIR) GO=$(GO) BUILDTAGS=$(BUILDTAGS) GIT_COMMIT=$(GIT_COMMIT) make binary-local
+	#GOPATH=$(BUILDDIR)
+	GO=$(GO) BUILDTAGS=$(BUILDTAGS) GIT_COMMIT=$(GIT_COMMIT) make binary-local
 	go-md2man -in $(BUILDDIR)/contrib/containers-storage.conf.5.md -out $(BUILDDIR)/containers-storage.conf.5
 
 override_dh_auto_test:
